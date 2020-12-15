@@ -1,10 +1,27 @@
 package api_handle
 
 import (
+	"share-module/configuration"
 	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
 )
+
+type WebProxy struct {
+	ListenHost	string
+	ListenPort	uint16
+	RequestTimeout	int
+}
+
+func StartAgentGatewayService(config *configuration.Conf)  {
+	webContext := WebProxy{
+		ListenHost:     config.Server.Host,
+		ListenPort:     config.Server.Port,
+		RequestTimeout: config.Server.RequestTimeout,
+	}
+	server := initializeServer(config.Server.RequestTimeout)
+
+}
 
 func initializeServer(RequestTimeout int) *gin.Engine {
 	server := gin.New()
