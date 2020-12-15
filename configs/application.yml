@@ -1,0 +1,10 @@
+db:
+  host: localhost
+  port: 3306
+  user: backend
+  password: 123456
+  dbname: test_backend
+rpc:
+  port: 9000
+server:
+  port: 8888
