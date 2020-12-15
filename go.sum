@@ -1,0 +1,7 @@
+github.com/confluentinc/confluent-kafka-go v1.5.2/go.mod h1:u2zNLny2xq+5rWeTQjFHbDzzNuba4P1vo31r9r4uAdg=
+github.com/go-redis/redis v6.15.9+incompatible/go.mod h1:NAIEuMOZ/fxfXJIrKDQDz8wamY7mA7PouImQ2Jvg6kA=
+github.com/headend/share-module v0.0.0-20201215142422-b2bab52a7224 h1:ecdwrLN0lxP3o+nCWdEZcUkaGIark5nj2e+1dVjjBWQ=
+github.com/headend/share-module v0.0.0-20201215142422-b2bab52a7224/go.mod h1:dG5PsEogW+v822OBCrAW4ilBqZ9EFtEZ1IZYqEI7Op4=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=
+gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
