@@ -1,7 +1,9 @@
 package api_handle
 
 import (
-	"share-module/configuration"
+	"fmt"
+	"log"
+	"github.com/headend/share-module/configuration"
 	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
@@ -20,6 +22,10 @@ func StartAgentGatewayService(config *configuration.Conf)  {
 		RequestTimeout: config.Server.RequestTimeout,
 	}
 	server := initializeServer(config.Server.RequestTimeout)
+	setupRoute(server, &webContext)
+	log.Print("begin run http server...")
+	listenAdd := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
+	_ = server.Run(listenAdd)
 
 }
 
@@ -40,7 +46,7 @@ func initializeServer(RequestTimeout int) *gin.Engine {
 		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge:           30 * time.Second,
+		MaxAge:           time.Duration(RequestTimeout) * time.Second,
 	}))
 	return server
 }

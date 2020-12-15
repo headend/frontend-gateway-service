@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/headend/share-module/configuration"
 	"log"
+	"github.com/headend/frontend-gateway-service/api-handle"
 )
 
 func main()  {

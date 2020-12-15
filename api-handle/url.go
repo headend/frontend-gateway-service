@@ -8,7 +8,7 @@ func setupRoute(server *gin.Engine, webContext *WebProxy) {
 		//----------------CCU-------------------
 		users := v1.Group("/getCCU")
 		{
-			users.GET("", webContext.getCCU)
+			users.GET("", webContext.control)
 		}
 
 	}
