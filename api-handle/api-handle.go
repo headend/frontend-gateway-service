@@ -7,6 +7,8 @@ import (
 	"time"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type WebProxy struct {
@@ -23,8 +25,10 @@ func StartAgentGatewayService(config *configuration.Conf)  {
 	}
 	server := initializeServer(config.Server.RequestTimeout)
 	setupRoute(server, &webContext)
+	server.GET("/doc/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	log.Print("begin run http server...")
 	listenAdd := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
+	log.Printf("Visit document page: %s/doc/", listenAdd)
 	_ = server.Run(listenAdd)
 
 }

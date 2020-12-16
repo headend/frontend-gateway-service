@@ -6,9 +6,16 @@ func setupRoute(server *gin.Engine, webContext *WebProxy) {
 	v1 := server.Group("/api/v1")
 	{
 		//----------------CCU-------------------
-		users := v1.Group("/getCCU")
+		control := v1.Group("/ctl")
 		{
-			users.GET("", webContext.control)
+			master := control.Group("/master")
+			{
+				master.GET("", webContext.control)
+			}
+			worker := control.Group("/worker")
+			{
+				worker.GET("", webContext.executer)
+			}
 		}
 
 	}
