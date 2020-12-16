@@ -16,4 +16,6 @@ func main()  {
 	if confFilePtr != nil {
 		conf.ConfigureFile = *confFilePtr
 	}
+	conf.LoadConf()
+	api_handle.StartAgentGatewayService(&conf)
 }
