@@ -6,15 +6,38 @@ func setupRoute(server *gin.Engine, webContext *WebProxy) {
 	v1 := server.Group("/api/v1")
 	{
 		//----------------CCU-------------------
-		control := v1.Group("/ctl")
+		control := v1.Group("/ctl/:agent_ip")
 		{
 			master := control.Group("/master")
 			{
-				master.GET("", webContext.control)
+				master.POST("/start-worker", webContext.startWorker)
+				master.POST("/stop-worker", webContext.stopWorker)
+				master.POST("/update-worker", webContext.updateWorker)
+				monitor := master.Group("/monitor")
+				{
+					monitorSignal := monitor.Group("/signal")
+					{
+						monitorSignal.POST("/enable", webContext.startWorker)
+						monitorSignal.POST("/disable", webContext.startWorker)
+					}
+					monitorVideo := monitor.Group("/video")
+					{
+						monitorVideo.POST("/enable", webContext.startWorker)
+						monitorVideo.POST("/disable", webContext.startWorker)
+					}
+					monitorAudio := monitor.Group("/audio")
+					{
+						monitorAudio.POST("/enable", webContext.startWorker)
+						monitorAudio.POST("/disable", webContext.startWorker)
+					}
+				}
 			}
-			worker := control.Group("/worker")
+			worker := v1.Group("/exe/:agent_ip")
 			{
-				worker.GET("", webContext.executer)
+				exeTask := worker.Group("/task")
+				{
+					exeTask.POST("/urgent", webContext.runUrgentTask)
+				}
 			}
 		}
 

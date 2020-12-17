@@ -9,26 +9,25 @@ import (
 	"github.com/gin-contrib/cors"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
 )
 
 type WebProxy struct {
-	ListenHost	string
-	ListenPort	uint16
-	RequestTimeout	int
+	Conf *configuration.Conf
 }
 
 func StartAgentGatewayService(config *configuration.Conf)  {
 	webContext := WebProxy{
-		ListenHost:     config.Server.Host,
-		ListenPort:     config.Server.Port,
-		RequestTimeout: config.Server.RequestTimeout,
+		Conf: config,
 	}
 	server := initializeServer(config.Server.RequestTimeout)
 	setupRoute(server, &webContext)
-	server.GET("/doc/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	log.Print("begin run http server...")
 	listenAdd := fmt.Sprintf("%s:%d", config.Server.Host, config.Server.Port)
-	log.Printf("Visit document page: %s/doc/", listenAdd)
+	swgrUri := fmt.Sprintf("%s/swagger/doc.json", listenAdd)
+	swgUrl := ginSwagger.URL(swgrUri)
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, swgUrl))
+	log.Print("begin run http server...")
+	log.Printf("Visit document page: %s/swagger/", listenAdd)
 	_ = server.Run(listenAdd)
 
 }
@@ -54,3 +53,6 @@ func initializeServer(RequestTimeout int) *gin.Engine {
 	}))
 	return server
 }
+
+
+

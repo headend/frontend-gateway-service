@@ -1,0 +1,90 @@
+definitions:
+  model.AgentCtlDataResponse:
+    properties:
+      control_id:
+        description: Control ID from frontend
+        type: integer
+      control_type:
+        description: "Control type, define from backend\n\t\t\t\t// start agent\n\t\t\t\tStartAgentd
+          = 10000\n\t\t\t\t// stop agent\n\t\t\t\tStopAgentd = 10001\n\t\t\t\t// Connect
+          agent\n\t\t\t\tConnectAgentd = 10030\n\t\t\t\t// Disconnect agent\n\t\t\t\tDisconnectAgentd
+          = 10031\n\t\t\t\t// Start Worker\n\t\t\t\tStartWorker = 20000\n\t\t\t\t//
+          Stop worker\n\t\t\t\tStopWorker = 20001\n\t\t\t\t//Update Worker\n\t\t\t\tUpdateWorker
+          = 20010\n\t\t\t\tSignal = 70001\n\t\t\t\tVideo = 70002\n\t\t\t\tAudio =
+          70003\n\t\t\t\tBlackScreen = 70004"
+        type: integer
+    type: object
+  model.AgentCtlRequest:
+    properties:
+      agent_ip:
+        description: Agent control ip
+        type: string
+      control_id:
+        description: Control ID from frontend
+        type: integer
+      control_type:
+        description: "Control type, define from backend\n\t\t\t// start agent\n\t\t\tStartAgentd
+          = 10000\n\t\t\t// stop agent\n\t\t\tStopAgentd = 10001\n\t\t\t// Connect
+          agent\n\t\t\tConnectAgentd = 10030\n\t\t\t// Disconnect agent\n\t\t\tDisconnectAgentd
+          = 10031\n\t\t\t// Start Worker\n\t\t\tStartWorker = 20000\n\t\t\t// Stop
+          worker\n\t\t\tStopWorker = 20001\n\t\t\t//Update Worker\n\t\t\tUpdateWorker
+          = 20010\n\t\t\tSignal = 70001\n\t\t\tVideo = 70002\n\t\t\tAudio = 70003\n\t\t\tBlackScreen
+          = 70004"
+        type: integer
+      tunnel_data:
+        additionalProperties:
+          type: string
+        description: Data transmit through frontend --> backend --> agent --> backend
+          --> frontend
+        type: object
+    type: object
+  model.AgentCtlResponse:
+    properties:
+      return_code:
+        description: "Return code\n\t\t1 - Success\n\t\t0 - Fail"
+        type: string
+      return_data:
+        $ref: '#/definitions/model.AgentCtlDataResponse'
+        description: Data
+      return_message:
+        description: Message success or fail
+        type: string
+      tunnel_data:
+        additionalProperties:
+          type: string
+        description: Data transmit through frontend --> backend --> agent --> backend
+          --> frontend
+        type: object
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/ctl/master/:
+    post:
+      consumes:
+      - application/json
+      description: Control agentd
+      parameters:
+      - description: Input params
+        in: body
+        name: model.AgentCtlRequest
+        required: true
+        schema:
+          $ref: '#/definitions/model.AgentCtlRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: "True"
+          schema:
+            $ref: '#/definitions/model.AgentCtlResponse'
+        "400":
+          description: Invalid param!!
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Control agentd
+swagger: "2.0"

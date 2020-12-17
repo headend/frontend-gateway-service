@@ -1,0 +1,114 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/api/v1/ctl/master/": {
+            "post": {
+                "description": "Control agentd",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Control agentd",
+                "parameters": [
+                    {
+                        "description": "Input params",
+                        "name": "model.AgentCtlRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentCtlRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "True",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentCtlResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid param!!",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.AgentCtlDataResponse": {
+            "type": "object",
+            "properties": {
+                "control_id": {
+                    "description": "Control ID from frontend",
+                    "type": "integer"
+                },
+                "control_type": {
+                    "description": "Control type, define from backend\n\t\t\t\t// start agent\n\t\t\t\tStartAgentd = 10000\n\t\t\t\t// stop agent\n\t\t\t\tStopAgentd = 10001\n\t\t\t\t// Connect agent\n\t\t\t\tConnectAgentd = 10030\n\t\t\t\t// Disconnect agent\n\t\t\t\tDisconnectAgentd = 10031\n\t\t\t\t// Start Worker\n\t\t\t\tStartWorker = 20000\n\t\t\t\t// Stop worker\n\t\t\t\tStopWorker = 20001\n\t\t\t\t//Update Worker\n\t\t\t\tUpdateWorker = 20010\n\t\t\t\tSignal = 70001\n\t\t\t\tVideo = 70002\n\t\t\t\tAudio = 70003\n\t\t\t\tBlackScreen = 70004",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.AgentCtlRequest": {
+            "type": "object",
+            "properties": {
+                "agent_ip": {
+                    "description": "Agent control ip",
+                    "type": "string"
+                },
+                "control_id": {
+                    "description": "Control ID from frontend",
+                    "type": "integer"
+                },
+                "control_type": {
+                    "description": "Control type, define from backend\n\t\t\t// start agent\n\t\t\tStartAgentd = 10000\n\t\t\t// stop agent\n\t\t\tStopAgentd = 10001\n\t\t\t// Connect agent\n\t\t\tConnectAgentd = 10030\n\t\t\t// Disconnect agent\n\t\t\tDisconnectAgentd = 10031\n\t\t\t// Start Worker\n\t\t\tStartWorker = 20000\n\t\t\t// Stop worker\n\t\t\tStopWorker = 20001\n\t\t\t//Update Worker\n\t\t\tUpdateWorker = 20010\n\t\t\tSignal = 70001\n\t\t\tVideo = 70002\n\t\t\tAudio = 70003\n\t\t\tBlackScreen = 70004",
+                    "type": "integer"
+                },
+                "tunnel_data": {
+                    "description": "Data transmit through frontend --\u003e backend --\u003e agent --\u003e backend --\u003e frontend",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.AgentCtlResponse": {
+            "type": "object",
+            "properties": {
+                "return_code": {
+                    "description": "Return code\n\t\t1 - Success\n\t\t0 - Fail",
+                    "type": "string"
+                },
+                "return_data": {
+                    "description": "Data",
+                    "$ref": "#/definitions/model.AgentCtlDataResponse"
+                },
+                "return_message": {
+                    "description": "Message success or fail",
+                    "type": "string"
+                },
+                "tunnel_data": {
+                    "description": "Data transmit through frontend --\u003e backend --\u003e agent --\u003e backend --\u003e frontend",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
