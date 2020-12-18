@@ -2,6 +2,7 @@ package api_handle
 
 import (
 	"fmt"
+	"google.golang.org/grpc"
 	"log"
 	"github.com/headend/share-module/configuration"
 	"time"
@@ -10,15 +11,24 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	agentpb "github.com/headend/iptv-agent-service/proto"
+
 )
 
 type WebProxy struct {
 	Conf *configuration.Conf
+	agentclient	*agentpb.AgentCTLServiceClient
 }
 
 func StartAgentGatewayService(config *configuration.Conf)  {
+	//connect user-services
+	agentConn := initializeClient(config.RPC.Agent.Gateway, config.RPC.Agent.Port)
+	defer agentConn.Close()
+	agentClient := agentpb.NewAgentCTLServiceClient(agentConn)
+
 	webContext := WebProxy{
 		Conf: config,
+		agentclient: &agentClient,
 	}
 	server := initializeServer(config.Server.RequestTimeout)
 	setupRoute(server, &webContext)
@@ -53,6 +63,19 @@ func initializeServer(RequestTimeout int) *gin.Engine {
 	}))
 	return server
 }
+
+func initializeClient(host string, port uint16) *grpc.ClientConn {
+	connectAddr := fmt.Sprintf("%s:%d", host, port)
+	println(connectAddr)
+	conn, err := grpc.Dial(connectAddr,
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(5*1024*1024)),
+		grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("failed to connect server: %v", err)
+	}
+	return conn
+}
+
 
 
 

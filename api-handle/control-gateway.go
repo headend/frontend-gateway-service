@@ -1,12 +1,15 @@
 package api_handle
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	agentpb "github.com/headend/iptv-agent-service/proto"
 	"github.com/headend/share-module/model"
 	"github.com/headend/share-module/file-and-directory"
 	"github.com/headend/share-module/configuration/static-config"
 	"log"
+	"time"
 )
 
 
@@ -23,22 +26,22 @@ import (
 // @BasePath /v1
 func (w *WebProxy) startWorker(ctx *gin.Context) {
 
-	ctlRequestHandle(ctx)
+	ctlRequestHandle(w, ctx)
 }
 
 func (w *WebProxy) stopWorker(ctx *gin.Context) {
 
-	ctlRequestHandle(ctx)
+	ctlRequestHandle(w, ctx)
 }
 
 
 func (w *WebProxy) updateWorker(ctx *gin.Context) {
 
-	ctlRequestHandle(ctx)
+	ctlRequestHandle(w, ctx)
 }
 
 
-func ctlRequestHandle(ctx *gin.Context) {
+func ctlRequestHandle(w *WebProxy, ctx *gin.Context) {
 	var requestData model.AgentCtlRequest
 	err := ctx.BindJSON(&requestData)
 	if err != nil {
@@ -50,6 +53,20 @@ func ctlRequestHandle(ctx *gin.Context) {
 		ctx.String(400, "invalid param")
 		return
 	}
+	// Check Agent exists
+	c, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	res, err := (*w.agentclient).Get(c, &agentpb.AgentFilter{IpControl: requestData.AgentIp})
+	if err != nil {
+		log.Println(err)
+		ctx.String(500, "Internal server error")
+		return
+	}
+	if len(res.Agents) == 0 {
+		ctx.String(404, "Agent not found")
+		return
+	}
+	log.Printf("%v", res.Agents)
 	var filee file_and_directory.MyFile
 	filee.Path = static_config.LogPath + "control_message"
 	filee.WriteString(string(b))

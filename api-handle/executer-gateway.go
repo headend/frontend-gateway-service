@@ -1,12 +1,15 @@
 package api_handle
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/headend/share-module/model"
-	"github.com/headend/share-module/file-and-directory"
+	agentpb "github.com/headend/iptv-agent-service/proto"
 	"github.com/headend/share-module/configuration/static-config"
+	"github.com/headend/share-module/file-and-directory"
+	"github.com/headend/share-module/model"
 	"log"
+	"time"
 )
 
 
@@ -23,25 +26,40 @@ import (
 // @BasePath /v1
 func (w *WebProxy) runUrgentTask(ctx *gin.Context) {
 
-	exeRequestHandle(ctx)
+	exeRequestHandle(w,ctx)
 }
 
 
-func exeRequestHandle(ctx *gin.Context) {
+func exeRequestHandle(w *WebProxy, ctx *gin.Context) {
 	var requestData model.AgentExeRequest
 	err := ctx.BindJSON(&requestData)
 	if err != nil {
 		ctx.String(400, "invalid param")
 		return
 	}
-	b, err := json.Marshal(requestData)
+	// Check Agent exists
+	c, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	res, err := (*w.agentclient).Get(c, &agentpb.AgentFilter{IpControl: requestData.ListAgentToRun[0]})
 	if err != nil {
-		ctx.String(400, "invalid param")
+		log.Println(err)
+		ctx.String(500, "Internal server error")
+		return
+	}
+	if len(res.Agents) == 0 {
+		ctx.String(404, "Agent not found")
+		return
+	}
+
+	jsonString, err := requestData.GetJsonString()
+	if err != nil {
+		log.Println(err)
+		ctx.String(400, "Internal server error")
 		return
 	}
 	var filee file_and_directory.MyFile
 	filee.Path = static_config.LogPath + "executer_message"
-	filee.WriteString(string(b))
+	filee.WriteString(jsonString)
 	responseData := model.AgentExeDataResponse{
 		ExeType: requestData.ExeType,
 		ExeId:   requestData.ExeId,
@@ -71,3 +89,5 @@ func getExeResponseData(responseResult model.AgentExeResponse) (rspDataString st
 	}
 	return string(b), nil
 }
+
+
