@@ -12,23 +12,38 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	agentpb "github.com/headend/iptv-agent-service/proto"
-
+	agentctlpb "github.com/headend/agent-control-service/proto"
+	agentexepb "github.com/headend/agent-executer-service/proto"
 )
 
 type WebProxy struct {
 	Conf *configuration.Conf
 	agentclient	*agentpb.AgentCTLServiceClient
+	agentctlclient	*agentctlpb.AgentCTLServiceClient
+	agentexeclient	*agentexepb.AgentEXEServiceClient
 }
 
 func StartAgentGatewayService(config *configuration.Conf)  {
-	//connect user-services
+	//connect agent services
 	agentConn := initializeClient(config.RPC.Agent.Gateway, config.RPC.Agent.Port)
 	defer agentConn.Close()
 	agentClient := agentpb.NewAgentCTLServiceClient(agentConn)
 
+	//connect agent coltrol services
+	agentCtlConn := initializeClient(config.RPC.Agent.Gateway, config.RPC.Agent.Port)
+	defer agentCtlConn.Close()
+	agentCtlClient := agentctlpb.NewAgentCTLServiceClient(agentCtlConn)
+
+	//connect agent executer services
+	agentExeConn := initializeClient(config.RPC.Agent.Gateway, config.RPC.Agent.Port)
+	defer agentExeConn.Close()
+	agentExeClient := agentexepb.NewAgentEXEServiceClient(agentExeConn)
+
 	webContext := WebProxy{
 		Conf: config,
 		agentclient: &agentClient,
+		agentctlclient: &agentCtlClient,
+		agentexeclient: &agentExeClient,
 	}
 	server := initializeServer(config.Server.RequestTimeout)
 	setupRoute(server, &webContext)
