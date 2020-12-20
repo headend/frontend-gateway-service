@@ -30,12 +30,12 @@ func StartAgentGatewayService(config *configuration.Conf)  {
 	agentClient := agentpb.NewAgentCTLServiceClient(agentConn)
 
 	//connect agent coltrol services
-	agentCtlConn := initializeClient(config.RPC.Agent.Gateway, config.RPC.Agent.Port)
+	agentCtlConn := initializeClient(config.RPC.Agentctl.Gateway, config.RPC.Agentctl.Port)
 	defer agentCtlConn.Close()
 	agentCtlClient := agentctlpb.NewAgentCTLServiceClient(agentCtlConn)
 
 	//connect agent executer services
-	agentExeConn := initializeClient(config.RPC.Agent.Gateway, config.RPC.Agent.Port)
+	agentExeConn := initializeClient(config.RPC.Agentrunner.Gateway, config.RPC.Agentrunner.Port)
 	defer agentExeConn.Close()
 	agentExeClient := agentexepb.NewAgentEXEServiceClient(agentExeConn)
 

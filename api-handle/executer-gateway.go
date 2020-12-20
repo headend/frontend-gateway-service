@@ -54,6 +54,14 @@ func exeRequestHandle(w *WebProxy, ctx *gin.Context, exeType int) {
 
 	// Send request to message queue
 	if senMessageToQueue(w, exeType, requestData) {
+		responseResult := model.AgentExeResponse{
+			ReturnCode:    0,
+			ReturnData:    model.AgentExeDataResponse{},
+			ReturnMessage: "RPC connection error",
+			TunnelData:    nil,
+		}
+		rspString, _ := responseResult.GetJsonString()
+		ctx.String(200, rspString)
 		return
 	}
 	// Make data response
@@ -87,7 +95,7 @@ func senMessageToQueue(w *WebProxy, exeType int, requestData model.AgentExeReque
 		ExeType:    int64(exeType),
 		TunnelData: nil,
 	}
-	c, cancel := context.WithTimeout(context.Background(), time.Second)
+	c, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	var err error
 	switch exeType {

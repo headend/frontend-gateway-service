@@ -62,6 +62,14 @@ func ctlRequestHandle(w *WebProxy, ctx *gin.Context, controlType int) {
 	}
 	// Make Queue message for control request
 	if sendToQueue(w, controlType, requestData) {
+		responseResult := model.AgentCtlResponse{
+			ReturnCode:    0,
+			ReturnData:    model.AgentCtlDataResponse{},
+			ReturnMessage: "RPC connection error",
+			TunnelData:    nil,
+		}
+		rspString, _ := responseResult.GetJsonString()
+		ctx.String(200, rspString)
 		return
 	}
 	responseData := model.AgentCtlDataResponse{
@@ -91,7 +99,7 @@ func sendToQueue(w *WebProxy, controlType int, requestData model.AgentCtlRequest
 		TunnelData:  nil,
 	}
 	// call rpc
-	c, cancel := context.WithTimeout(context.Background(), time.Second)
+	c, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	var rpcErr error
 	switch controlType {
