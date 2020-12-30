@@ -17,18 +17,22 @@ func setupRoute(server *gin.Engine, webContext *WebProxy) {
 				{
 					monitorSignal := monitor.Group("/signal")
 					{
-						monitorSignal.POST("/enable", webContext.startWorker)
-						monitorSignal.POST("/disable", webContext.startWorker)
+						monitorSignal.POST("/enable", webContext.activeMonitorSignal)
+						monitorSignal.POST("/disable", webContext.inactiveMonitorSignal)
 					}
 					monitorVideo := monitor.Group("/video")
 					{
-						monitorVideo.POST("/enable", webContext.startWorker)
-						monitorVideo.POST("/disable", webContext.startWorker)
+						monitorVideo.POST("/enable", webContext.activeMonitorVideo)
+						monitorVideo.POST("/disable", webContext.inactiveMonitorVideo)
 					}
 					monitorAudio := monitor.Group("/audio")
 					{
-						monitorAudio.POST("/enable", webContext.startWorker)
-						monitorAudio.POST("/disable", webContext.startWorker)
+						monitorAudio.POST("/enable", webContext.activeMonitorAudio)
+						monitorAudio.POST("/disable", webContext.inactiveMonitorAudio)
+					}
+					monitorThread := monitor.Group("/thread")
+					{
+						monitorThread.POST("/:thread_num/update", webContext.updateThreadMonitor)
 					}
 				}
 			}

@@ -18,7 +18,7 @@ import (
 
 type WebProxy struct {
 	Conf *configuration.Conf
-	agentclient	*agentpb.AgentCTLServiceClient
+	agentclient	*agentpb.AgentServiceClient
 	agentctlclient	*agentctlpb.AgentCTLServiceClient
 	agentexeclient	*agentexepb.AgentEXEServiceClient
 }
@@ -27,7 +27,7 @@ func StartAgentGatewayService(config *configuration.Conf)  {
 	//connect agent services
 	agentConn := initializeClient(config.RPC.Agent.Gateway, config.RPC.Agent.Port)
 	defer agentConn.Close()
-	agentClient := agentpb.NewAgentCTLServiceClient(agentConn)
+	agentClient := agentpb.NewAgentServiceClient(agentConn)
 
 	//connect agent coltrol services
 	agentCtlConn := initializeClient(config.RPC.Agentctl.Gateway, config.RPC.Agentctl.Port)
